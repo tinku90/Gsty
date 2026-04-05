@@ -1,0 +1,155 @@
+.settings-page {
+  padding: 12px 0 24px;
+}
+
+.settings-header h1 {
+  margin: 0;
+  font-size: 28px;
+  color: #0f172a;
+}
+
+.settings-header p {
+  margin: 6px 0 0;
+  color: #64748b;
+}
+
+.settings-card {
+  margin-top: 20px;
+  padding: 24px;
+  border-radius: 20px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 36px rgba(15, 23, 42, 0.05);
+}
+
+.settings-card__intro h2 {
+  margin: 0;
+  color: #0f172a;
+}
+
+.settings-card__intro p {
+  margin: 8px 0 0;
+  color: #64748b;
+  line-height: 1.6;
+}
+
+.settings-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 22px;
+}
+
+.settings-grid__full {
+  grid-column: 1 / -1;
+}
+
+.settings-grid label,
+.settings-otp label {
+  display: grid;
+  gap: 8px;
+  color: #334155;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.settings-grid input,
+.settings-otp input {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 13px 14px;
+  border-radius: 14px;
+  border: 1px solid #dbe4f0;
+  background: #ffffff;
+  font-size: 15px;
+}
+
+.settings-grid input:disabled {
+  background: #f8fafc;
+  color: #64748b;
+}
+
+.settings-verify,
+.settings-otp {
+  margin-top: 18px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+}
+
+.settings-verify {
+  display: flex;
+  justify-content: space-between;
+  gap: 18px;
+  align-items: center;
+}
+
+.settings-verify__content strong {
+  color: #0f172a;
+}
+
+.settings-verify__content p {
+  margin: 6px 0 0;
+  color: #1d4ed8;
+}
+
+.settings-otp {
+  display: grid;
+  gap: 12px;
+}
+
+.settings-otp__hint {
+  color: #1d4ed8;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.settings-actions {
+  margin-top: 22px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.settings-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 12px 18px;
+  background: #0f172a;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.settings-btn--secondary {
+  background: #2563eb;
+}
+
+.settings-message {
+  margin-top: 16px;
+  padding: 13px 14px;
+  border-radius: 14px;
+  line-height: 1.6;
+}
+
+.settings-message--success {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+.settings-message--error {
+  background: #fef2f2;
+  color: #b91c1c;
+}
+
+@media (max-width: 900px) {
+  .settings-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .settings-verify {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}
