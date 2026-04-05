@@ -1,0 +1,198 @@
+.login-page {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: #f5f7fb;
+}
+
+.login-card {
+  width: 100%;
+  max-width: 420px;
+  background: #fff;
+  border-radius: 16px;
+  padding: 36px 32px 32px;
+  box-shadow: 0 4px 24px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
+.login-brand {
+  text-align: center;
+  margin-bottom: 28px;
+}
+
+.login-brand-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 8px;
+}
+
+.login-logo {
+  width: 44px;
+  height: 44px;
+  background: #0f172a;
+  color: #fff;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 22px;
+}
+
+.login-app-name {
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-tagline {
+  margin: 0;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.login-card h1 {
+  margin: 0 0 4px;
+  font-size: 22px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.login-sub {
+  margin: 0 0 24px;
+  font-size: 14px;
+  color: #64748b;
+}
+
+.login-section-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #0f172a;
+  margin: 0 0 12px;
+}
+
+.login-roles {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.login-role {
+  position: relative;
+  display: block;
+  cursor: pointer;
+}
+
+.login-role input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.login-role-card {
+  border: 2px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 14px;
+  background: #fafafa;
+  transition: border-color 0.15s ease, background 0.15s ease;
+  height: 100%;
+}
+
+.login-role-card strong {
+  display: block;
+  font-size: 14px;
+  color: #0f172a;
+  margin-bottom: 4px;
+}
+
+.login-role-card span {
+  font-size: 12px;
+  color: #64748b;
+  line-height: 1.35;
+}
+
+.login-role input:checked + .login-role-card {
+  border-color: #0f172a;
+  background: #fff;
+}
+
+.login-role-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #e5e7eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  color: #475569;
+}
+
+.login-role input:checked + .login-role-card .login-role-icon {
+  background: #0f172a;
+  color: #fff;
+}
+
+.login-field {
+  margin-bottom: 16px;
+}
+
+.login-field label {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+  color: #334155;
+  margin-bottom: 6px;
+}
+
+.login-field input {
+  width: 100%;
+  padding: 12px 14px;
+  font-size: 15px;
+  border: 1px solid #e5e7eb;
+  border-radius: 10px;
+  background: #f9fafb;
+  box-sizing: border-box;
+  font-family: inherit;
+}
+
+.login-field input:focus {
+  outline: none;
+  border-color: #0f172a;
+  background: #fff;
+}
+
+.login-submit {
+  width: 100%;
+  margin-top: 8px;
+  padding: 14px;
+  font-size: 15px;
+  font-weight: 600;
+  color: #fff;
+  background: #0f172a;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+.login-submit:hover {
+  background: #1e293b;
+}
+
+.login-forgot {
+  display: block;
+  text-align: center;
+  margin-top: 20px;
+  font-size: 14px;
+  color: #64748b;
+  text-decoration: none;
+}
+
+.login-forgot:hover {
+  color: #0f172a;
+}

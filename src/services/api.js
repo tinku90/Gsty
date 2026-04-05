@@ -10,3 +10,9 @@ const API = axios.create({
 export default API;
 
 export const getDashboard = () => API.get("/dashboard");
+export const getTransactions = (monthYear) =>
+  API.get("/transactions", { params: { monthYear } });
+export const getReturnsData = (monthYear) =>
+  API.get("/transactions/returns", { params: { monthYear } });
+export const resetUploadData = () => API.post("/upload/reset");
+export const removeUploadedFile = (uploadId) => API.post("/upload/remove", { uploadId });
