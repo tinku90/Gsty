@@ -286,6 +286,14 @@
   border-bottom: 1px solid #f1f5f9;
 }
 
+.file-entry {
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.file-entry:last-child {
+  border-bottom: none;
+}
+
 .file-item-name {
   min-width: 0;
 }
@@ -299,16 +307,20 @@
   justify-self: end;
 }
 
-.file-item:last-child {
-  border-bottom: none;
-}
-
 .success {
   color: #16a34a;
 }
 
 .error {
   color: #dc2626;
+}
+
+.file-item-message {
+  margin-top: -6px;
+  padding: 0 0 16px;
+  color: #b91c1c;
+  font-size: 13px;
+  line-height: 1.4;
 }
 
 /* CHECKMARK */
@@ -392,6 +404,75 @@
 
 .upload-section {
   margin-top: 32px;
+}
+
+.upload-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.returns-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 14px 16px;
+  border-radius: 14px;
+  background: #eef2ff;
+  color: #312e81;
+  font-weight: 500;
+  width: fit-content;
+}
+
+.returns-toggle input {
+  width: 16px;
+  height: 16px;
+}
+
+.upload-box--returns {
+  border-style: solid;
+  border-color: #c7d2fe;
+  background: #f8faff;
+}
+
+.upload-icon--returns {
+  background: #e0e7ff;
+  color: #4338ca;
+}
+
+.secondary-upload-btn {
+  background: #0f172a;
+}
+
+.secondary-upload-btn:hover {
+  background: #020617;
+}
+
+.selected-file-preview {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  margin-top: 14px;
+}
+
+.selected-file-chip {
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #eef2ff;
+  color: #3730a3;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.selected-file-chip--returns {
+  background: #e0f2fe;
+  color: #075985;
+}
+
+.upload-submit {
+  display: flex;
+  justify-content: center;
 }
 
 .marketplace-section {

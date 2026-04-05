@@ -1,3 +1,22 @@
+import { Pencil, Trash2 } from "lucide-react";
+import { formatMoney } from "../utils/format";
+
+function getRowId(row, index = 0) {
+  if (row.recordId) {
+    return row.recordId;
+  }
+
+  return [
+    row.uploadId || "upload",
+    row.invoiceNumber || row.invoice || "invoice",
+    row.invoiceDate || row.date || "date",
+    row.party || "party",
+    row.amount || 0,
+    row.taxAmount ?? row.tax ?? 0,
+    index,
+  ].join("__");
+}
+
 function getSourceLabel(row) {
   if (row.sourceLabel) {
     return row.sourceLabel;
@@ -22,7 +41,7 @@ function getSourceLabel(row) {
   return row.source || row.fileName || "N/A";
 }
 
-function getTypeLabel(row) {
+export function getTransactionTypeLabel(row) {
   const text = [
     row.type,
     row.sourceType,
@@ -65,13 +84,30 @@ function getRateLabel(row) {
     : "-";
 }
 
-export default function TransactionsTable({ data }) {
+export default function TransactionsTable({
+  data,
+  selectedIds = [],
+  onToggleSelect,
+  onToggleSelectAll,
+  onEditRow,
+  onDeleteRow,
+  emptyMessage = "No transactions found.",
+}) {
+  const allSelected = data.length > 0 && data.every((row, index) => selectedIds.includes(getRowId(row, index)));
+  const selectionMode = selectedIds.length > 0;
+
   return (
     <div className="table-container">
       <table>
-
         <thead>
           <tr>
+            <th>
+              <input
+                type="checkbox"
+                checked={allSelected}
+                onChange={() => onToggleSelectAll?.(data)}
+              />
+            </th>
             <th>Source File</th>
             <th>Invoice No</th>
             <th>Date</th>
@@ -88,37 +124,62 @@ export default function TransactionsTable({ data }) {
         </thead>
 
         <tbody>
-          {data?.map((row, index) => (
-            <tr key={index} className={row.status !== "valid" ? "row-error" : ""}>
-
+          {data?.length === 0 ? (
+            <tr>
+              <td colSpan="13">{emptyMessage}</td>
+            </tr>
+          ) : data?.map((row, index) => {
+            const rowId = getRowId(row, index);
+            return (
+            <tr key={rowId} className={row.status !== "valid" ? "row-error" : ""}>
+              <td>
+                <input
+                  type="checkbox"
+                  checked={selectedIds.includes(rowId)}
+                  onChange={() => onToggleSelect?.(rowId)}
+                />
+              </td>
               <td>{getSourceLabel(row)}</td>
               <td>{row.invoiceNumber || row.invoice}</td>
               <td>{row.invoiceDate || row.date}</td>
               <td>{row.party}</td>
               <td>{row.gstin}</td>
               <td>
-                <span className="transaction-type-badge">{getTypeLabel(row)}</span>
+                <span className="transaction-type-badge">{getTransactionTypeLabel(row)}</span>
               </td>
               <td>{row.hsn}</td>
               <td>{getRateLabel(row)}</td>
-
-             
-
-              <td>₹{Number(row.amount || row.total_invoice_value || 0).toLocaleString()}</td>
-<td>₹{Number(row.taxAmount || row.tax || 0).toLocaleString()}</td>
-
-
-
+              <td>{formatMoney(row.amount || row.total_invoice_value || 0)}</td>
+              <td>{formatMoney(row.taxAmount || row.tax || 0)}</td>
               <td>
-                <span className={`status ${row.status || 'valid'}`}>
-                  {row.status || 'valid'}
+                <span className={`status ${row.status || "valid"}`}>
+                  {row.status || "valid"}
                 </span>
               </td>
-
-              <td>✏️</td>
-
+              <td>
+                {!selectionMode && (
+                  <div className="transaction-actions">
+                    <button
+                      className="icon-button"
+                      type="button"
+                      onClick={() => onEditRow?.(row)}
+                      aria-label="Edit transaction"
+                    >
+                      <Pencil size={16} />
+                    </button>
+                    <button
+                      className="icon-button icon-button--danger"
+                      type="button"
+                      onClick={() => onDeleteRow?.([rowId])}
+                      aria-label="Delete transaction"
+                    >
+                      <Trash2 size={16} />
+                    </button>
+                  </div>
+                )}
+              </td>
             </tr>
-          ))}
+          )})}
         </tbody>
 
       </table>

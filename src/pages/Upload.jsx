@@ -46,10 +46,27 @@ export default function UploadData() {
   const navigate = useNavigate();
   const [sourceType, setSourceType] = useState("marketplace");
   const [marketplace, setMarketplace] = useState("amazon");
+  const [hasReturnsData, setHasReturnsData] = useState(false);
+  const [selectedSalesFiles, setSelectedSalesFiles] = useState([]);
+  const [selectedReturnFiles, setSelectedReturnFiles] = useState([]);
   const [files, setFiles] = useState([]);
   const [uploadStatus, setUploadStatus] = useState(null);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState("");
+
+  const getErrorMessage = (error) => {
+    const rawMessage =
+      error?.response?.data?.error ||
+      error?.response?.data?.message ||
+      error?.message ||
+      "Upload failed.";
+
+    if (typeof rawMessage === "string" && rawMessage.includes("Unexpected field")) {
+      return "Upload failed because the backend is still using the older upload API. Please restart the backend server and try again.";
+    }
+
+    return rawMessage;
+  };
 
   const dispatchUploadState = () => {
     window.dispatchEvent(new Event("uploadStateChanged"));
@@ -109,10 +126,19 @@ export default function UploadData() {
     }
   }, []);
 
-  const handleFileUpload = async (e) => {
-    const selectedFiles = Array.from(e.target.files);
+  const uploadSelectedFiles = async () => {
+    const hasExistingSalesUpload = files.some(
+      (file) => file.status === "success" && file.uploadKind !== "returns"
+    );
+    const isReturnsOnlyUpload = hasReturnsData && selectedReturnFiles.length > 0 && selectedSalesFiles.length === 0;
 
-    if (!selectedFiles.length) {
+    if (!selectedSalesFiles.length && !hasExistingSalesUpload && !isReturnsOnlyUpload) {
+      setMessage("Please select at least one sales file.");
+      return;
+    }
+
+    if (hasReturnsData && !selectedReturnFiles.length) {
+      setMessage("Please select the returns file as well.");
       return;
     }
 
@@ -120,8 +146,11 @@ export default function UploadData() {
       setLoading(true);
 
       const formData = new FormData();
-      selectedFiles.forEach((file) => {
+      selectedSalesFiles.forEach((file) => {
         formData.append("file", file);
+      });
+      selectedReturnFiles.forEach((file) => {
+        formData.append("returnsFile", file);
       });
 
       formData.append("sourceType", sourceType);
@@ -135,14 +164,16 @@ export default function UploadData() {
             marketplace: file.marketplace || marketplace,
             sourceType: file.sourceType || sourceType,
             sourceLabel: file.sourceLabel || marketplace,
+            uploadKind: file.uploadKind || "sales",
             status: "success",
             errors: 0,
           }))
-        : selectedFiles.map((file) => ({
+        : [...selectedSalesFiles, ...selectedReturnFiles].map((file) => ({
             name: file.name,
             marketplace,
             sourceType,
             sourceLabel: sourceType === "marketplace" ? marketplace : sourceType,
+            uploadKind: selectedReturnFiles.some((selected) => selected.name === file.name) ? "returns" : "sales",
             status: "success",
             errors: 0,
           }));
@@ -159,26 +190,45 @@ export default function UploadData() {
       });
 
       setMessage("");
+      setSelectedSalesFiles([]);
+      setSelectedReturnFiles([]);
+      setHasReturnsData(false);
     } catch (err) {
-      const failedFiles = selectedFiles.map((file) => ({
+      const errorMessage = getErrorMessage(err);
+      const failedFiles = [...selectedSalesFiles, ...selectedReturnFiles].map((file) => ({
         name: file.name,
         marketplace,
+        uploadKind: selectedReturnFiles.some((selected) => selected.name === file.name) ? "returns" : "sales",
         status: "error",
         errors: 1,
+        errorMessage,
       }));
 
       setFiles((prev) => {
-        const updated = [...prev, ...failedFiles];
-        persistFiles(updated);
+        const preservedSuccesses = prev.filter((file) => file.status === "success");
+        const updated = [...preservedSuccesses, ...failedFiles];
+        persistFiles(preservedSuccesses);
         return updated;
       });
 
-      setMessage("Upload failed. Please try again.");
+      setMessage(errorMessage);
     } finally {
       setLoading(false);
     }
+  };
 
-    e.target.value = null;
+  const handleSalesFileSelect = (event) => {
+    const nextFiles = Array.from(event.target.files || []);
+    setSelectedSalesFiles(nextFiles);
+    setMessage("");
+    event.target.value = null;
+  };
+
+  const handleReturnsFileSelect = (event) => {
+    const nextFiles = Array.from(event.target.files || []);
+    setSelectedReturnFiles(nextFiles);
+    setMessage("");
+    event.target.value = null;
   };
 
   const removeFile = async (index) => {
@@ -205,6 +255,7 @@ export default function UploadData() {
 
   const totalFiles = files.length;
   const totalErrors = files.reduce((sum, file) => sum + (file.errors || 0), 0);
+  const successfulFiles = files.filter((file) => file.status === "success");
 
   return (
     <div className="upload-page">
@@ -275,29 +326,97 @@ export default function UploadData() {
       )}
 
       <div className="section upload-section">
-        <div className="upload-box">
-          <div className="upload-icon">
-            <UploadIcon />
+        <div className="upload-panels">
+          <div className="upload-box">
+            <div className="upload-icon">
+              <UploadIcon />
+            </div>
+            <h3>Upload sales data</h3>
+            <p>Select one or more primary sales files for this source.</p>
+
+            <input
+              type="file"
+              multiple
+              hidden
+              id="salesFileUpload"
+              onChange={handleSalesFileSelect}
+            />
+
+            <button
+              className="upload-btn"
+              type="button"
+              onClick={() => document.getElementById("salesFileUpload").click()}
+            >
+              Choose Sales Files
+            </button>
+
+            {selectedSalesFiles.length > 0 && (
+              <div className="selected-file-preview">
+                {selectedSalesFiles.map((file) => (
+                  <div key={file.name} className="selected-file-chip">
+                    {file.name}
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
-          <h3>Drag and drop your file here</h3>
-          <p>or click to browse</p>
 
-          <input
-            type="file"
-            multiple
-            hidden
-            id="fileUpload"
-            onChange={handleFileUpload}
-          />
+          <label className="returns-toggle">
+            <input
+              type="checkbox"
+              checked={hasReturnsData}
+              onChange={(event) => {
+                const checked = event.target.checked;
+                setHasReturnsData(checked);
+                if (!checked) {
+                  setSelectedReturnFiles([]);
+                }
+              }}
+            />
+            <span>I also have returns / cancellation data for these sales</span>
+          </label>
 
-          <button
-            className="upload-btn"
-            onClick={() => document.getElementById("fileUpload").click()}
-          >
-            Upload File
-          </button>
+          {hasReturnsData && (
+            <div className="upload-box upload-box--returns">
+              <div className="upload-icon upload-icon--returns">
+                <UploadIcon />
+              </div>
+              <h3>Upload returns data</h3>
+              <p>Attach the matching returns file so GST calculations can exclude cancelled sales.</p>
 
-          {loading && <p>Uploading...</p>}
+              <input
+                type="file"
+                multiple
+                hidden
+                id="returnsFileUpload"
+                onChange={handleReturnsFileSelect}
+              />
+
+              <button
+                className="upload-btn secondary-upload-btn"
+                type="button"
+                onClick={() => document.getElementById("returnsFileUpload").click()}
+              >
+                Choose Returns Files
+              </button>
+
+              {selectedReturnFiles.length > 0 && (
+                <div className="selected-file-preview">
+                  {selectedReturnFiles.map((file) => (
+                    <div key={file.name} className="selected-file-chip selected-file-chip--returns">
+                      {file.name}
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          <div className="upload-submit">
+            <button className="upload-btn" type="button" onClick={uploadSelectedFiles} disabled={loading}>
+              {loading ? "Uploading..." : "Upload Selected Files"}
+            </button>
+          </div>
         </div>
       </div>
 
@@ -306,15 +425,21 @@ export default function UploadData() {
           <h3>Uploaded Files</h3>
 
           {files.map((file, index) => (
-            <div key={`${file.name}-${index}`} className="file-item">
-              <span className="file-item-name">{file.name} ({file.marketplace})</span>
-              <span className={`file-item-status ${file.status === "success" ? "success" : "error"}`}>
-                {file.status === "success" ? "Processed" : "Error"}
-              </span>
-              <span className="file-item-errors">{file.errors > 0 ? `${file.errors} issues` : "No errors"}</span>
-              <button className="secondary file-item-action" type="button" onClick={() => removeFile(index)}>
-                Remove
-              </button>
+            <div key={`${file.name}-${index}`} className="file-entry">
+              <div className="file-item">
+                <span className="file-item-name">
+                  {file.name} ({file.marketplace})
+                  {file.uploadKind === "returns" ? " - returns" : ""}
+                </span>
+                <span className={`file-item-status ${file.status === "success" ? "success" : "error"}`}>
+                  {file.status === "success" ? "Processed" : "Error"}
+                </span>
+                <span className="file-item-errors">{file.errors > 0 ? `${file.errors} issues` : "No errors"}</span>
+                <button className="secondary file-item-action" type="button" onClick={() => removeFile(index)}>
+                  Remove
+                </button>
+              </div>
+              {file.errorMessage ? <div className="file-item-message">{file.errorMessage}</div> : null}
             </div>
           ))}
         </div>
@@ -333,7 +458,7 @@ export default function UploadData() {
         </div>
       )}
 
-      {files.length > 0 && (
+      {successfulFiles.length > 0 && (
         <div className="upload-actions">
           <button
             className="primary"

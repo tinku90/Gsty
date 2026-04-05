@@ -14,5 +14,9 @@ export const getTransactions = (monthYear) =>
   API.get("/transactions", { params: { monthYear } });
 export const getReturnsData = (monthYear) =>
   API.get("/transactions/returns", { params: { monthYear } });
+export const updateTransactions = (recordIds, changes, mode = "single") =>
+  API.post("/transactions/update", { recordIds, changes, mode });
+export const deleteTransactions = (recordIds) =>
+  API.post("/transactions/delete", { recordIds });
 export const resetUploadData = () => API.post("/upload/reset");
 export const removeUploadedFile = (uploadId) => API.post("/upload/remove", { uploadId });

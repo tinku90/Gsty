@@ -147,6 +147,152 @@
   overflow: hidden;
 }
 
+.transactions-section {
+  margin-top: 22px;
+}
+
+.transactions-section__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+
+.transactions-section__header h2 {
+  margin: 0;
+  font-size: 18px;
+  color: #0f172a;
+}
+
+.transactions-section__header p {
+  margin: 4px 0 0;
+  color: #64748b;
+  font-size: 13px;
+}
+
+.transactions-section__badge {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #e0f2fe;
+  color: #075985;
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.transactions-note {
+  margin-bottom: 12px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.pagination-panel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 14px;
+  background: linear-gradient(180deg, #ffffff 0%, #f8fafc 100%);
+}
+
+.pagination-panel__meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.pagination-panel__title {
+  font-size: 13px;
+  font-weight: 700;
+  color: #0f172a;
+}
+
+.pagination-panel__count {
+  font-size: 13px;
+  color: #64748b;
+}
+
+.pagination-panel__controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.pagination-btn {
+  border: 1px solid #cbd5e1;
+  background: #ffffff;
+  color: #0f172a;
+  padding: 9px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+}
+
+.pagination-btn--primary {
+  background: #0f172a;
+  color: white;
+  border-color: #0f172a;
+}
+
+.pagination-btn:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.pagination-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: #e0e7ff;
+  color: #3730a3;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.bulk-actions-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 16px 0;
+  padding: 14px 16px;
+  border: 1px solid #dbe4f0;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.bulk-actions-buttons {
+  display: flex;
+  gap: 10px;
+}
+
+.bulk-btn {
+  border: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  background: #0f172a;
+  color: white;
+  cursor: pointer;
+}
+
+.bulk-btn--secondary {
+  background: #e2e8f0;
+  color: #0f172a;
+}
+
+.bulk-btn--danger {
+  background: #dc2626;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;
@@ -160,6 +306,11 @@ th, td {
   padding: 12px;
   text-align: left;
   font-size: 14px;
+}
+
+th:first-child,
+td:first-child {
+  width: 42px;
 }
 
 tbody tr {
@@ -218,4 +369,106 @@ tbody tr {
 
 .file-gst-btn:hover {
   background: #1e293b;
+}
+
+.transaction-actions {
+  display: flex;
+  gap: 8px;
+}
+
+.icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  color: #0f172a;
+}
+
+.icon-button--danger {
+  color: #dc2626;
+}
+
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.modal-card {
+  width: min(760px, 100%);
+  background: #ffffff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.18);
+}
+
+.modal-card--small {
+  width: min(480px, 100%);
+}
+
+.modal-note {
+  color: #64748b;
+  margin-top: 8px;
+}
+
+.modal-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 18px;
+}
+
+.modal-grid label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 14px;
+  color: #334155;
+}
+
+.modal-grid input,
+.modal-grid select {
+  border: 1px solid #dbe4f0;
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+
+.modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+  .bulk-actions-bar {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+
+  .bulk-actions-buttons {
+    flex-wrap: wrap;
+  }
+
+  .modal-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .pagination-panel {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .pagination-panel__controls {
+    width: 100%;
+    justify-content: space-between;
+  }
 }
