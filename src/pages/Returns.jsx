@@ -101,20 +101,27 @@ function deriveNoteRows(transactions = []) {
 
       return containsAny(noteText, ["credit note", "debit note", "cn", "dn"]);
     })
-    .map((row, index) => ({
-      id: row.recordId || `${row.invoiceNumber || row.invoice || "note"}-${index}`,
-      noteType:
-        row.isReturnRecord || containsAny(
-          [row.documentType, row.noteType, row.invoiceNumber].filter(Boolean).join(" "),
-          ["credit note", "cn", "return"]
-        )
-          ? "Credit Note"
-          : "Debit Note",
-      reference: row.invoiceNumber || row.invoice || "N/A",
-      party: row.party || "N/A",
-      taxableValue: toNumber(row.taxable),
-      taxAmount: getTax(row),
-    }));
+    .map((row, index) => {
+      const taxable = toNumber(row.taxable);
+      const taxAmt = getTax(row);
+      return {
+        id: row.recordId || `${row.invoiceNumber || row.invoice || "note"}-${index}`,
+        recipientGstin: row.gstin || "N/A",
+        noteDate: row.invoiceDate || row.date || "N/A",
+        noteType:
+          row.isReturnRecord || containsAny(
+            [row.documentType, row.noteType, row.invoiceNumber].filter(Boolean).join(" "),
+            ["credit note", "cn", "return"]
+          )
+            ? "Credit Note"
+            : "Debit Note",
+        reference: row.invoiceNumber || row.invoice || "N/A",
+        party: row.party || "N/A",
+        noteValue: toNumber(row.amount) || (taxable + taxAmt),
+        taxableValue: taxable,
+        taxAmount: taxAmt,
+      };
+    });
 }
 
 function deriveAdvanceRows(transactions = []) {
@@ -706,8 +713,9 @@ export default function Returns() {
                 <tr>
                   <th>HSN</th>
                   <th>Description</th>
+                  <th>Tax Rate</th>
                   <th>Quantity</th>
-                  <th>QAS</th>
+                  <th>UQC</th>
                   <th>Taxable Value</th>
                   <th>CGST</th>
                   <th>SGST</th>
@@ -717,7 +725,7 @@ export default function Returns() {
               <tbody>
                 {hsn.length === 0 ? (
                   <tr>
-                    <td colSpan="8">
+                    <td colSpan="9">
                       <EmptyState
                         title="No HSN summary available"
                         message="HSN summary will appear once HSN-coded products are detected from uploaded transactions."
@@ -730,6 +738,7 @@ export default function Returns() {
                     <tr key={`${row.hsn}-${index}`}>
                       <td>{row.hsn}</td>
                       <td>{row.description}</td>
+                      <td>{row.rate != null ? `${row.rate}%` : "N/A"}</td>
                       <td>{row.quantity}</td>
                       <td>
                         <select
@@ -823,9 +832,12 @@ export default function Returns() {
               <table>
                 <thead>
                   <tr>
+                    <th>Recipient GSTIN/UIN</th>
+                    <th>Note Date</th>
                     <th>Note Type</th>
                     <th>Reference</th>
                     <th>Party</th>
+                    <th>Note Value</th>
                     <th>Taxable Value</th>
                     <th>Tax Amount</th>
                   </tr>
@@ -833,7 +845,7 @@ export default function Returns() {
                 <tbody>
                   {notes.length === 0 ? (
                     <tr>
-                      <td colSpan="5">
+                      <td colSpan="8">
                         <EmptyState
                           title="No credit or debit notes found"
                           message="This table will populate when uploaded records are identified as note transactions."
@@ -844,9 +856,12 @@ export default function Returns() {
                   ) : (
                     visibleNotes.map((row) => (
                       <tr key={row.id}>
+                        <td>{row.recipientGstin}</td>
+                        <td>{row.noteDate}</td>
                         <td>{row.noteType}</td>
                         <td>{row.reference}</td>
                         <td>{row.party}</td>
+                        <td>{formatMoney(row.noteValue)}</td>
                         <td>{formatMoney(row.taxableValue)}</td>
                         <td>{formatMoney(row.taxAmount)}</td>
                       </tr>
