@@ -374,23 +374,35 @@ export default function UploadData() {
 
       <div className="section state-section">
         <label className="state-label" htmlFor="stateOfSaleSelect">
-          State of Sale <span className="required-mark">*</span>
-          <small>Select the state from which you are selling (your business registration state). This is used to calculate CGST/SGST vs IGST.</small>
+          <span>
+            State of Sale (Place of Supply)
+            <span className="required-mark">*</span>
+          </span>
+          <small>
+            Select the state your business is registered in. This determines whether tax is split as CGST + SGST (intra-state) or charged as IGST (inter-state).
+          </small>
         </label>
-        <select
-          id="stateOfSaleSelect"
-          className="state-select"
-          value={stateOfSale}
-          onChange={(e) => setStateOfSale(e.target.value)}
-          required
-        >
-          <option value="">-- Select State of Sale --</option>
-          {STATE_OPTIONS.map((s) => (
-            <option key={s.code} value={s.code}>
-              {s.code} - {s.name}
-            </option>
-          ))}
-        </select>
+        <div className="state-select-row">
+          <select
+            id="stateOfSaleSelect"
+            className="state-select"
+            value={stateOfSale}
+            onChange={(e) => setStateOfSale(e.target.value)}
+            required
+          >
+            <option value="">-- Select your state --</option>
+            {STATE_OPTIONS.map((s) => (
+              <option key={s.code} value={s.code}>
+                {s.code} — {s.name}
+              </option>
+            ))}
+          </select>
+          {stateOfSale && (
+            <span className="state-badge">
+              ✓ {STATE_OPTIONS.find((s) => s.code === stateOfSale)?.name}
+            </span>
+          )}
+        </div>
       </div>
 
       <div className="section upload-section">
